@@ -78,6 +78,7 @@
     right: 20px;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Poți ajusta umbra după preferințe */
+    z-index: 1; /* Asigură-te că imaginea este deasupra inelului */
 }
 
 #minimizedChat::before {
@@ -92,6 +93,7 @@
     background: conic-gradient(from 0deg, green, blue); /* Gradientul conic */
     transform: translate(-50%, -50%);
     animation: spin 2s linear infinite; /* Animația de rotație */
+    z-index: 0; /* Asigură-te că inelul este sub imagine */
 }
 
 @keyframes spin {
@@ -108,9 +110,8 @@
     height: 50px; /* Ajustează dimensiunea imaginii */
     border-radius: 50%;
     object-fit: cover;
+    z-index: 2; /* Asigură-te că imaginea este deasupra inelului */
 }
-
-
         
         .message {
             margin: 10px 0;
