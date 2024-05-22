@@ -83,6 +83,29 @@
             height: 100%;
             border-radius: 50%;
         }
+        #minimizedChat::before, #minimizedChat::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 2s linear infinite;
+        }
+        #minimizedChat::before {
+            border: 2px solid pink;
+            animation-duration: 2s;
+        }
+        #minimizedChat::after {
+            border: 2px solid lightblue;
+            animation-duration: 3s;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
         .message {
             margin: 10px 0;
             display: flex;
@@ -226,7 +249,7 @@
                     messages: [
                         {
                             role: "system",
-                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
+                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
                         },
                         { role: "user", content: message }
                     ]
@@ -240,14 +263,9 @@
                 let assistantMessage = data.choices[0].message.content;
                 assistantMessage = formatResponse(assistantMessage);
 
-                // Remove typing indicator
-                removeTypingIndicator();
-
-                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } else {
-                removeTypingIndicator();
+               removeTypingIndicator();
                 chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
             }
         }
 
@@ -267,7 +285,7 @@
         }
 
         // Function to open chat automatically with an initial message
-             async function openChatWithInitialMessage() {
+        async function openChatWithInitialMessage() {
             toggleChat();
             chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt asistentul EvoDent, cu ce informații vă pot ajuta?</p></div>`;
         }
@@ -283,4 +301,3 @@
     </script>
 </body>
 </html>
-
