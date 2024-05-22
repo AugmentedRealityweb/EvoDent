@@ -160,8 +160,8 @@
 <body>
     <div id="chatContainer">
         <div id="chatHeader" onclick="toggleChat()">
-            <img src="poza2.jpg" alt="StelminaBot">
-            <span>StelminaBot</span>
+            <img src="poza2.jpg" alt="EvoDentBot">
+            <span>EvoDentBot</span>
         </div>
         <div id="chatbox"></div>
         <div style="display: flex;">
@@ -170,7 +170,7 @@
         </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
-        <img src="poza2.jpg" alt="StelminaBot">
+        <img src="poza2.jpg" alt="EvoDentBot">
     </div>
 
     <script>
@@ -221,7 +221,7 @@
                     messages: [
                         {
                             role: "system",
-                            content: `You are Stelmina, a friendly and helpful AI assistant for our company. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
+                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
                         },
                         { role: "user", content: message }
                     ]
@@ -263,7 +263,7 @@
         // Function to open chat automatically with an initial message
         async function openChatWithInitialMessage() {
             toggleChat();
-            chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt AI Stelmina, cu ce informații vă pot ajuta?</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt EvoDentBot AI, cu ce informații vă pot ajuta?</p></div>`;
         }
 
         // Automatically open chat after 2 seconds
