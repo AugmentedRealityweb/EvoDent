@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
@@ -11,20 +12,20 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 400px; /* Adjust this value to your desired width */
+            width: 400px;
             max-width: 100%;
-            display: none; /* Initially hidden */
+            display: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 10px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 80vh; /* Adjust this value to your desired height */
+            max-height: 80vh;
             background-color: white;
         }
         #chatbox {
             flex-grow: 1;
-            height: 500px; /* Adjust this value to your desired height */
+            height: 500px;
             padding: 10px;
             overflow-y: auto;
             background-color: white;
@@ -56,13 +57,13 @@
             flex-grow: 1;
         }
         #sendButton {
-            width: 80px; /* Adjust this value to your desired width */
+            width: 80px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 0 0 10px 0;
             cursor: pointer;
-            font-size: 16px; /* Adjust this value to your desired font size */
+            font-size: 16px;
         }
         #minimizedChat {
             display: flex;
@@ -104,6 +105,13 @@
         .message.assistant p {
             background-color: #f1f1f1;
         }
+        .message.assistant ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        .message.assistant li {
+            margin-bottom: 10px;
+        }
         .typing-indicator {
             display: flex;
             justify-content: flex-start;
@@ -132,8 +140,6 @@
                 opacity: 1;
             }
         }
-
-        /* Media queries for mobile optimization */
         @media (max-width: 600px) {
             #chatContainer {
                 width: 100%;
@@ -150,9 +156,9 @@
                 height: 30px;
             }
             #sendButton {
-                width: 80px; /* Adjust this value to your desired width */
+                width: 80px;
                 border-radius: 0;
-                font-size: 14px; /* Adjust this value to your desired font size */
+                font-size: 14px;
             }
         }
     </style>
@@ -160,7 +166,7 @@
 <body>
     <div id="chatContainer">
         <div id="chatHeader" onclick="toggleChat()">
-            <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" >
+            <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
             <span>EvoDentBot</span>
         </div>
         <div id="chatbox"></div>
@@ -170,7 +176,7 @@
         </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
-        <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" >
+        <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
     </div>
 
     <script>
@@ -221,7 +227,7 @@
                     messages: [
                         {
                             role: "system",
-                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
+                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page. Ensure your responses are formatted using HTML for better readability. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
                         },
                         { role: "user", content: message }
                     ]
@@ -266,12 +272,12 @@
             chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt asistentul EvoDent, cu ce informații vă pot ajuta?</p></div>`;
         }
 
-        // Automatically open chat after 2 seconds
+               // Automatically open chat after 2 seconds
         window.onload = function() {
             chatContainer.style.display = 'none';
             minimizedChat.style.display = 'flex';
             setTimeout(() => {
-                          openChatWithInitialMessage();
+                openChatWithInitialMessage();
             }, 2000);
         };
     </script>
