@@ -196,22 +196,6 @@
     <div id="minimizedChat" onclick="toggleChat()">
         <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
     </div>
-</head>
-<body>
-    <div id="chatContainer">
-        <div id="chatHeader" onclick="toggleChat()">
-            <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
-            <span>EvoDentBot</span>
-        </div>
-        <div id="chatbox"></div>
-        <div style="display: flex;">
-            <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()">
-            <button id="sendButton" onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-    <div id="minimizedChat" onclick="toggleChat()">
-        <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
-    </div>
 
     <script>
         const chatContainer = document.getElementById('chatContainer');
@@ -279,7 +263,13 @@
                 let assistantMessage = data.choices[0].message.content;
                 assistantMessage = formatResponse(assistantMessage);
 
-               removeTypingIndicator();
+                // Remove typing indicator
+                removeTypingIndicator();
+
+                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+         } else {
+                removeTypingIndicator();
                 chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
