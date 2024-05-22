@@ -7,6 +7,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
         #chatContainer {
             position: fixed;
@@ -37,6 +40,7 @@
             padding: 10px;
             border-radius: 0 0 0 10px;
             outline: none;
+            font-size: 14px;
         }
         #chatHeader {
             display: flex;
@@ -92,6 +96,8 @@
             padding: 10px;
             border-radius: 10px;
             max-width: 80%;
+            font-size: 14px;
+            line-height: 1.5;
         }
         .message.user {
             justify-content: flex-end;
@@ -108,9 +114,11 @@
         .message.assistant ul {
             padding-left: 20px;
             margin: 0;
+            list-style-type: disc;
         }
         .message.assistant li {
             margin-bottom: 10px;
+            line-height: 1.5;
         }
         .typing-indicator {
             display: flex;
@@ -186,7 +194,6 @@
         const minimizedChat = document.getElementById('minimizedChat');
         let typingIndicator;
 
-        // Define the toggleChat function
         function toggleChat() {
             if (chatContainer.style.display === 'none') {
                 chatContainer.style.display = 'block';
@@ -197,11 +204,21 @@
             }
         }
 
-        // Function to load document text
         async function loadDocumentText() {
             const response = await fetch('https://raw.githubusercontent.com/AugmentedRealityweb/EvoDent/main/Steli.txt');
             const text = await response.text();
             return text;
+        }
+
+        function formatResponse(response) {
+            return response
+                .replace(/\n/g, '<br>')
+                .replace(/\*{2}(.*?)\*{2}/g, '<strong>$1</strong>') // bold
+                .replace(/\*{1}(.*?)\*{1}/g, '<em>$1</em>') // italic
+                .replace(/1\.\s/g, '<li>') // list items
+                .replace(/2\.\s/g, '<li>') // list items
+                .replace(/3\.\s/g, '<li>') // list items
+                .replace(/<li>/g, '</li><li>'); // closing tags for list items
         }
 
         async function sendMessage() {
@@ -210,7 +227,6 @@
             inputBox.value = '';
             chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
 
-            // Add typing indicator
             showTypingIndicator();
 
             const documentText = await loadDocumentText();
@@ -238,9 +254,8 @@
             console.log("Response from API:", data);
 
             if (data.choices && data.choices.length > 0) {
-                const assistantMessage = data.choices[0].message.content;
+                const assistantMessage = formatResponse(data.choices[0].message.content);
 
-                // Remove typing indicator
                 removeTypingIndicator();
 
                 chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
@@ -253,7 +268,7 @@
 
         function showTypingIndicator() {
             typingIndicator = document.createElement('div');
-            typingIndicator.className = 'typing-indicator';
+                      typingIndicator.className = 'typing-indicator';
             typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
             chatbox.appendChild(typingIndicator);
             chatbox.scrollTop = chatbox.scrollHeight;
@@ -272,7 +287,7 @@
             chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt asistentul EvoDent, cu ce informații vă pot ajuta?</p></div>`;
         }
 
-               // Automatically open chat after 2 seconds
+        // Automatically open chat after 2 seconds
         window.onload = function() {
             chatContainer.style.display = 'none';
             minimizedChat.style.display = 'flex';
