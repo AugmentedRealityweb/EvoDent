@@ -83,28 +83,24 @@
             height: 100%;
             border-radius: 50%;
         }
-        #minimizedChat::before, #minimizedChat::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: spin 2s linear infinite;
-        }
-        #minimizedChat::before {
-            border: 2px solid pink;
-            animation-duration: 2s;
-        }
-        #minimizedChat::after {
-            border: 2px solid lightblue;
-            animation-duration: 3s;
-        }
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+       #minimizedChat::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid green;
+    transform: translate(-50%, -50%);
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
         }
         .message {
             margin: 10px 0;
