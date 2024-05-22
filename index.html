@@ -65,12 +65,12 @@
             cursor: pointer;
             font-size: 16px; /* Adjust this value to your desired font size */
         }
-  #minimizedChat {
+ #minimizedChat {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px; /* Dimensiunea cercului */
-    height: 50px; /* Dimensiunea cercului */
+    width: 60px; /* Dimensiunea cercului */
+    height: 60px; /* Dimensiunea cercului */
     border-radius: 50%;
     background-color: #4CAF50;
     position: fixed;
@@ -80,8 +80,8 @@
 }
 
 #minimizedChat img {
-    width: 45px; /* Ajustează pentru a se potrivi dimensiunii cercului */
-    height: 45px; /* Ajustează pentru a se potrivi dimensiunii cercului */
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -91,11 +91,10 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 70px; /* Ajustează pentru a se potrivi dimensiunii cercului */
-    height: 70px; /* Ajustează pentru a se potrivi dimensiunii cercului */
+    width: 60px; /* Dimensiunea inelului rotativ */
+    height: 60px; /* Dimensiunea inelului rotativ */
     border-radius: 50%;
-    border: 2px solid green;
-    box-shadow: 0 0 10px white; /* Adaugă o umbră albă */
+    border: 3px solid green; /* Grosimea inelului și culoarea */
     transform: translate(-50%, -50%);
     animation: spin 2s linear infinite;
 }
@@ -104,6 +103,7 @@
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
 
         
         .message {
