@@ -69,13 +69,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px; /* Ajustează dimensiunea după preferințe */
-    height: 70px; /* Ajustează dimensiunea după preferințe */
+    width: 60px; /* Ajustează dimensiunea după preferințe */
+    height: 60px; /* Ajustează dimensiunea după preferințe */
     border-radius: 50%;
     background-color: transparent; /* Asigură-te că fundalul este transparent */
     position: fixed;
-    bottom: 62px;
-    right: 62px;
+    bottom: 20px;
+    right: 20px;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Poți ajusta umbra după preferințe */
     z-index: 1; /* Asigură-te că imaginea este deasupra inelului */
@@ -86,11 +86,11 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 70px; /* Dimensiunea inelului exterior */
-    height: 70px; /* Dimensiunea inelului exterior */
+    width: 68px; /* Dimensiunea inelului exterior */
+    height: 68px; /* Dimensiunea inelului exterior */
     border-radius: 50%;
     border: 2px solid transparent; /* Grosimea și culoarea inelului */
-    background: conic-gradient(from 0deg, white, #0099ce); /* Gradientul conic */
+    background: conic-gradient(from 0deg, green, #0099ce); /* Gradientul conic */
     transform: translate(-50%, -50%);
     animation: spin 2s linear infinite; /* Animația de rotație */
     z-index: 0; /* Asigură-te că inelul este sub imagine */
@@ -106,14 +106,13 @@
 }
 
 #minimizedChat img {
-    width: 60px; /* Ajustează dimensiunea imaginii */
-    height: 60px; /* Ajustează dimensiunea imaginii */
+    width: 56px; /* Ajustează dimensiunea imaginii */
+    height: 56px; /* Ajustează dimensiunea imaginii */
     border-radius: 50%;
-    object-fit: contain; /* Asigură-te că imaginea este vizibilă în întregime */
+    object-fit: cover;
     z-index: 2; /* Asigură-te că imaginea este deasupra inelului */
 }
-
-        
+     
         .message {
             margin: 10px 0;
             display: flex;
