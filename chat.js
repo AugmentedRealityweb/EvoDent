@@ -9,12 +9,14 @@ const openai = new OpenAIApi(configuration);
 
 module.exports = async function handler(req, res) {
   const { messages } = req.body;
+  console.log("Received messages:", messages);
 
   try {
     const response = await openai.createChatCompletion({
       model: "gpt-4o",
       messages: messages,
     });
+    console.log("Response from OpenAI:", response.data);
 
     res.status(200).json(response.data);
   } catch (error) {
