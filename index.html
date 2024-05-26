@@ -16,12 +16,16 @@
             max-width: 100%;
             display: none; /* Initially hidden */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            border-radius: 50%; /* Make it oval */
             overflow: hidden;
             display: flex;
             flex-direction: column;
             max-height: 80vh; /* Adjust this value to your desired height */
             background-color: white;
+            transition: border-radius 0.3s ease;
+        }
+        #chatContainer.open {
+            border-radius: 20px; /* Adjust the border-radius when opened */
         }
         #chatbox {
             flex-grow: 1;
@@ -170,6 +174,9 @@
                 border-radius: 0;
                 max-height: 100vh;
             }
+            #chatContainer.open {
+                border-radius: 0;
+            }
             #chatHeader {
                 padding: 5px;
             }
@@ -186,7 +193,7 @@
     </style>
 </head>
 <body>
-    <div id="chatContainer">
+    <div id="chatContainer" class="open">
         <div id="chatHeader" onclick="toggleChat()">
             <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
             <span>EvoDentBot</span>
@@ -212,9 +219,11 @@
         function toggleChat() {
             if (chatContainer.style.display === 'none') {
                 chatContainer.style.display = 'block';
+                chatContainer.classList.add('open');
                 minimizedChat.style.display = 'none';
             } else {
                 chatContainer.style.display = 'none';
+                chatContainer.classList.remove('open');
                 minimizedChat.style.display = 'flex';
             }
         }
@@ -253,9 +262,9 @@
                     messages: [
                         {
                             role: "system",
-                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
+                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned, and arranged in the chat page. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
                         },
-                                                { role: "user", content: message }
+                        { role: "user", content: message }
                     ]
                 })
             });
@@ -311,4 +320,3 @@
     </script>
 </body>
 </html>
-
