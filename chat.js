@@ -20,7 +20,11 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error("Error fetching chat response:", error); // Log the error
-    res.status(500).json({ error: "An error occurred while fetching chat response", details: error.message });
+    console.error("Error fetching chat response:", error); // Log the error details
+    res.status(500).json({ 
+      error: "An error occurred while fetching chat response", 
+      details: error.message,
+      stack: error.stack // Adaugă și stack trace pentru mai multe informații
+    });
   }
 };
