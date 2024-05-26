@@ -236,22 +236,34 @@
             return text;
         }
 
+        // Function to fetch current date and time
+        async function fetchCurrentDateTime() {
+            try {
+                const response = await fetch('http://worldtimeapi.org/api/timezone/Europe/Bucharest');
+                const data = await response.json();
+                return data.datetime; // Returnează timpul curent în format ISO
+            } catch (error) {
+                console.error("Error fetching current date and time:", error);
+                return null;
+            }
+        }
+
         function formatResponse(response) {
             return response.replace(/(?:\.\s*)/g, '.<br><br>');
         }
 
         function showTypingIndicator() {
             typingIndicator = document.createElement('div');
-            typingIndicator.className = 'typing-indicator';
-            typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-            chatbox.appendChild(typingIndicator);
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
+                    typingIndicator.className = 'typing-indicator';
+        typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatbox.appendChild(typingIndicator);
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
 
-        function removeTypingIndicator() {
-            if (typingIndicator) {
-                typingIndicator.remove();
-                            typingIndicator = null;
+    function removeTypingIndicator() {
+        if (typingIndicator) {
+            typingIndicator.remove();
+            typingIndicator = null;
         }
     }
 
@@ -271,7 +283,12 @@
 
         try {
             const documentText = await loadDocumentText();
-            console.log("Document text loaded:", documentText);
+            const currentDateTime = await fetchCurrentDateTime();
+            const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
+            const systemMessage = `
+                You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
+                Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
+            `;
 
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -279,11 +296,11 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                     model: "gpt-3.5-turbo",
+                    model: "gpt-3.5-turbo",
                     messages: [
                         {
                             role: "system",
-                            content: `You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology. When you provide information, it should be structured, clear, and comprehensive. You provide insights and help customers as if you are an experienced astrologer. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}`
+                            content: systemMessage
                         },
                         ...conversationHistory
                     ]
@@ -320,7 +337,6 @@
         }
     }
 
-    // Function to open chat automatically with an initial message
     async function openChatWithInitialMessage() {
         toggleChat();
         chatbox.innerHTML += `
