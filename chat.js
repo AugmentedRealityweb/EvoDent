@@ -1,19 +1,24 @@
-// chat.js
-export default async function handler(req, res) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    console.log("Request received:", req.body);
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(req.body)
+const { Configuration, OpenAIApi } = require("openai");
+require('dotenv').config();
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+
+module.exports = async function handler(req, res) {
+  const { messages } = req.body;
+
+  try {
+    const response = await openai.createChatCompletion({
+      model: "gpt-4o",
+      messages: messages,
     });
 
-    const data = await response.json();
-    console.log("Response from OpenAI:", data);
-
-    res.status(200).json(data);
-}
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error fetching chat response:", error);
+    res.status(500).json({ error: "An error occurred while fetching chat response" });
+  }
+};
