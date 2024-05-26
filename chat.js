@@ -1,11 +1,4 @@
-const { Configuration, OpenAIApi } = require("openai");
 require('dotenv').config();
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -17,13 +10,26 @@ module.exports = async function handler(req, res) {
   console.log("Received messages:", messages);
 
   try {
-    const response = await openai.createChatCompletion({
-      model: "gpt-4o",
-      messages: messages,
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: messages,
+      })
     });
-    console.log("Response from OpenAI:", response.data);
 
-    res.status(200).json(response.data);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Response from OpenAI:", data);
+
+    res.status(200).json(data);
   } catch (error) {
     console.error("Error fetching chat response:", error);
     res.status(500).json({ 
