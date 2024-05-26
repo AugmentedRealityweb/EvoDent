@@ -131,7 +131,7 @@
             justify-content: flex-end;
         }
         .message.user p {
-            background-color: #680078;
+            background-color: #ffffff;
         }
         .message.assistant {
             justify-content: flex-start;
@@ -197,7 +197,7 @@
 <body>
     <div id="chatContainer" class="open">
         <div id="chatHeader" onclick="toggleChat()">
-            <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
             <span>EvoDentBot</span>
         </div>
         <div id="chatbox"></div>
@@ -207,7 +207,7 @@
         </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
-        <img src="https://evodent.ro/wp-content/uploads/2024/01/open-graph.jpg" alt="EvoDentBot">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
     </div>
 
     <script>
@@ -308,7 +308,8 @@
         // Function to open chat automatically with an initial message
         async function openChatWithInitialMessage() {
             toggleChat();
-            chatbox.innerHTML += `<div class="message assistant"><p>Bună, eu sunt asistentul EvoDent, cu ce informații vă pot ajuta?</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim.</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>1.Harta natală 2.Tranzite și Predicții 3.Compatibilitate 4.Aspecte personale 5.Astrologie zilnică și săptămânală 6.Întrebări generale despre astrologi</p></div>`;
         }
 
         // Automatically open chat after 2 seconds
@@ -317,7 +318,7 @@
             minimizedChat.style.display = 'flex';
             setTimeout(() => {
                 openChatWithInitialMessage();
-            }, 2000);
+            }, 3000);
         };
     </script>
 </body>
