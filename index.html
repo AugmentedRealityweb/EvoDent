@@ -238,15 +238,16 @@
 
         // Function to fetch current date and time
         async function fetchCurrentDateTime() {
-            try {
-                const response = await fetch('http://worldtimeapi.org/api/timezone/Europe/Bucharest');
-                const data = await response.json();
-                return data.datetime; // Returnează timpul curent în format ISO
-            } catch (error) {
-                console.error("Error fetching current date and time:", error);
-                return null;
-            }
-        }
+    try {
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Bucharest'); // Schimbă HTTP în HTTPS
+        const data = await response.json();
+        console.log("Current DateTime from API:", data.datetime);
+        return data.datetime; // Returnează timpul curent în format ISO
+    } catch (error) {
+        console.error("Error fetching current date and time:", error);
+        return null;
+    }
+}
 
         // Function to get the next day's date
         function getNextDayDate(currentDate) {
