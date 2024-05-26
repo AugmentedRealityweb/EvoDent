@@ -12,29 +12,29 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 400px;
+            width: 400px; /* Adjust this value to your desired width */
             max-width: 100%;
-            display: none;
+            display: none; /* Initially hidden */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
+            border-radius: 50%; /* Make it oval */
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 80vh;
+            max-height: 80vh; /* Adjust this value to your desired height */
             background-color: white;
             transition: border-radius 0.3s ease;
         }
         #chatContainer.open {
-            border-radius: 50px;
+            border-radius: 50px; /* Adjust the border-radius when opened */
         }
         #chatbox {
             flex-grow: 1;
-            height: 500px;
+            height: 500px; /* Adjust this value to your desired height */
             padding: 10px;
             overflow-y: auto;
-            background-color: #260050;
+            background-color: #260050; /* Change background color */
             border-top: 1px solid #ccc;
-            color: #4722a2;
+            color: #4722a2; /* Change text color */
         }
         #inputBox {
             flex-grow: 1;
@@ -62,13 +62,13 @@
             flex-grow: 1;
         }
         #sendButton {
-            width: 80px;
+            width: 80px; /* Adjust this value to your desired width */
             background-color: #9700f8;
             color: white;
             border: none;
             border-radius: 0 0 20px 0;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 16px; /* Adjust this value to your desired font size */
         }
         #minimizedChat {
             display: flex;
@@ -91,8 +91,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 62px;
-            height: 62px;
+            width: 62px; /* Dimensiunea inelului exterior */
+            height: 62px; /* Dimensiunea inelului exterior */
             border-radius: 50%;
             border: 2px solid transparent;
             background: conic-gradient(from 0deg, #00d79e, #00739e);
@@ -109,8 +109,8 @@
             }
         }
         #minimizedChat img {
-            width: 62px;
-            height: 62px;
+            width: 62px; /* Ajustează dimensiunea imaginii */
+            height: 62px; /* Ajustează dimensiunea imaginii */
             border-radius: 50%;
             object-fit: cover;
             z-index: 2;
@@ -124,7 +124,7 @@
             padding: 10px;
             border-radius: 10px;
             max-width: 80%;
-            color: #4722a2;
+            color: #4722a2; /* Change text color */
         }
         .message.user {
             justify-content: flex-end;
@@ -166,6 +166,7 @@
                 opacity: 1;
             }
         }
+        /* Media queries for mobile optimization */
         @media (max-width: 600px) {
             #chatContainer {
                 width: 100%;
@@ -185,9 +186,9 @@
                 height: 30px;
             }
             #sendButton {
-                width: 80px;
+                width: 80px; /* Adjust this value to your desired width */
                 border-radius: 0;
-                font-size: 14px;
+                font-size: 14px; /* Adjust this value to your desired font size */
             }
         }
     </style>
@@ -215,7 +216,8 @@
         const minimizedChat = document.getElementById('minimizedChat');
         let typingIndicator;
 
-            function toggleChat() {
+        // Define the toggleChat function
+        function toggleChat() {
             if (chatContainer.style.display === 'none') {
                 chatContainer.style.display = 'block';
                 chatContainer.classList.add('open');
@@ -227,24 +229,41 @@
             }
         }
 
+        // Function to load document text
         async function loadDocumentText() {
             const response = await fetch('https://raw.githubusercontent.com/AugmentedRealityweb/EvoDent/main/Steli.txt');
             const text = await response.text();
             return text;
         }
 
+        // Function to fetch current date and time
         async function fetchCurrentDateTime() {
             try {
                 const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Bucharest');
                 const data = await response.json();
                 console.log("Current DateTime from API:", data.datetime);
-                return data.datetime; 
+                return data.datetime; // Returnează timpul curent în format ISO
             } catch (error) {
                 console.error("Error fetching current date and time:", error);
                 return null;
             }
         }
+async function fetchCoordinates(location) {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${location}&format=json&limit=1`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const coordinates = {
+                    lat: data[0].lat,
+                    lon: data[0].lon
+                };
+                return coordinates;
+            } else {
+                console.error("No results found for the given location.");
+                return null;
+            }
+        }
 
+        // Function to get the next day's date
         function getNextDayDate(currentDate) {
             const date = new Date(currentDate);
             date.setDate(date.getDate() + 1);
@@ -278,30 +297,41 @@
             inputBox.value = '';
             chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
 
+            // Adaugă mesajul utilizatorului în istoricul conversației
             conversationHistory.push({ role: "user", content: message });
 
+            // Adaugă indicatorul de tastare
             showTypingIndicator();
 
             try {
                 const documentText = await loadDocumentText();
                 const currentDateTime = await fetchCurrentDateTime();
+                const coordinates = await fetchCoordinates('Romania');
+                console.log("Coordinates:", coordinates); // Verifică coordonatele
                 const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
                 const nextDayDate = currentDateTime ? getNextDayDate(currentDateTime) : 'unavailable';
 
                 const systemMessage = `
                     You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
                     Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
-                    Predictions for tomorrow (${nextDayDate}): [Your predictions here based on the astrology knowledge base]
+                    Predictions for tomorrow (${nextDayDate}): [Your predictions here based on the astrology knowledge base and coordinates: ${coordinates.lat}, ${coordinates.lon}]
                 `;
-
-                conversationHistory.unshift({ role: "system", content: systemMessage });
 
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ messages: conversationHistory })
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            {
+                                role: "system",
+                                content: systemMessage
+                            },
+                            ...conversationHistory
+                        ]
+                    })
                 });
 
                 if (!response.ok) {
@@ -315,8 +345,10 @@
                     let assistantMessage = data.choices[0].message.content;
                     assistantMessage = formatResponse(assistantMessage);
 
+                    // Adaugă răspunsul asistentului în istoricul conversației
                     conversationHistory.push({ role: "assistant", content: assistantMessage });
 
+                    // Scoate indicatorul de tastare
                     removeTypingIndicator();
 
                     chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
@@ -348,6 +380,7 @@
                 </div>`;
         }
 
+        // Automatically open chat after 2 seconds
         window.onload = function() {
             chatContainer.style.display = 'none';
             minimizedChat.style.display = 'flex';
@@ -358,4 +391,3 @@
     </script>
 </body>
 </html>
-
