@@ -28,8 +28,9 @@
             height: 500px; /* Adjust this value to your desired height */
             padding: 10px;
             overflow-y: auto;
-            background-color: white;
+            background-color: #260050; /* Change background color */
             border-top: 1px solid #ccc;
+            color: #4722a2; /* Change text color */
         }
         #inputBox {
             flex-grow: 1;
@@ -65,7 +66,7 @@
             cursor: pointer;
             font-size: 16px; /* Adjust this value to your desired font size */
         }
- #minimizedChat {
+        #minimizedChat {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -108,8 +109,7 @@
             border-radius: 50%;
             object-fit: cover;
             z-index: 2;
-}
-     
+        }
         .message {
             margin: 10px 0;
             display: flex;
@@ -119,6 +119,7 @@
             padding: 10px;
             border-radius: 10px;
             max-width: 80%;
+            color: #4722a2; /* Change text color */
         }
         .message.user {
             justify-content: flex-end;
@@ -160,7 +161,6 @@
                 opacity: 1;
             }
         }
-
         /* Media queries for mobile optimization */
         @media (max-width: 600px) {
             #chatContainer {
@@ -255,7 +255,7 @@
                             role: "system",
                             content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned and arranged in the chat page. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
                         },
-                        { role: "user", content: message }
+                                            { role: "user", content: message }
                     ]
                 })
             });
@@ -272,7 +272,7 @@
 
                 chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
-         } else {
+            } else {
                 removeTypingIndicator();
                 chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
@@ -311,3 +311,4 @@
     </script>
 </body>
 </html>
+
