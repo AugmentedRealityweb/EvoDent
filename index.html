@@ -71,19 +71,21 @@
             font-size: 16px; /* Adjust this value to your desired font size */
         }
         #minimizedChat {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px; /* Ajustează dimensiunea după preferințe */
-            height: 60px; /* Ajustează dimensiunea după preferințe */
-            border-radius: 50%;
-            background-color: transparent;
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: transparent;
+    position: fixed;
+    bottom: 50%;
+    right: 50%;
+    transform: translate(50%, 50%);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
         }
         #minimizedChat::before {
             content: '';
@@ -129,7 +131,7 @@
             justify-content: flex-end;
         }
         .message.user p {
-            background-color: #dcf8c6;
+            background-color: #680078;
         }
         .message.assistant {
             justify-content: flex-start;
