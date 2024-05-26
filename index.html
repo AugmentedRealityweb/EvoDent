@@ -309,7 +309,12 @@
         async function openChatWithInitialMessage() {
             toggleChat();
             chatbox.innerHTML += `<div class="message assistant"><p>Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim.</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>1.Harta natală 2.Tranzite și Predicții 3.Compatibilitate 4.Aspecte personale 5.Astrologie zilnică și săptămânală 6.Întrebări generale despre astrologi</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>1.Harta natală</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>2.Tranzite și Predicții</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>3.Compatibilitate</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>4.Aspecte personale</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>5.Astrologie zilnică și săptămânală</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>6.Întrebări generale despre astrologi</p></div>`;
         }
 
         // Automatically open chat after 2 seconds
@@ -318,7 +323,7 @@
             minimizedChat.style.display = 'flex';
             setTimeout(() => {
                 openChatWithInitialMessage();
-            }, 3000);
+            }, 2200);
         };
     </script>
 </body>
