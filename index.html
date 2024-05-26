@@ -12,29 +12,29 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 400px; /* Adjust this value to your desired width */
+            width: 400px;
             max-width: 100%;
-            display: none; /* Initially hidden */
+            display: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 50%; /* Make it oval */
+            border-radius: 50%;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 80vh; /* Adjust this value to your desired height */
+            max-height: 80vh;
             background-color: white;
             transition: border-radius 0.3s ease;
         }
         #chatContainer.open {
-            border-radius: 50px; /* Adjust the border-radius when opened */
+            border-radius: 50px;
         }
         #chatbox {
             flex-grow: 1;
-            height: 500px; /* Adjust this value to your desired height */
+            height: 500px;
             padding: 10px;
             overflow-y: auto;
-            background-color: #260050; /* Change background color */
+            background-color: #260050;
             border-top: 1px solid #ccc;
-            color: #4722a2; /* Change text color */
+            color: #4722a2;
         }
         #inputBox {
             flex-grow: 1;
@@ -62,13 +62,13 @@
             flex-grow: 1;
         }
         #sendButton {
-            width: 80px; /* Adjust this value to your desired width */
+            width: 80px;
             background-color: #9700f8;
             color: white;
             border: none;
             border-radius: 0 0 20px 0;
             cursor: pointer;
-            font-size: 16px; /* Adjust this value to your desired font size */
+            font-size: 16px;
         }
         #minimizedChat {
             display: flex;
@@ -91,8 +91,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 62px; /* Dimensiunea inelului exterior */
-            height: 62px; /* Dimensiunea inelului exterior */
+            width: 62px;
+            height: 62px;
             border-radius: 50%;
             border: 2px solid transparent;
             background: conic-gradient(from 0deg, #00d79e, #00739e);
@@ -109,8 +109,8 @@
             }
         }
         #minimizedChat img {
-            width: 62px; /* Ajustează dimensiunea imaginii */
-            height: 62px; /* Ajustează dimensiunea imaginii */
+            width: 62px;
+            height: 62px;
             border-radius: 50%;
             object-fit: cover;
             z-index: 2;
@@ -124,7 +124,7 @@
             padding: 10px;
             border-radius: 10px;
             max-width: 80%;
-            color: #4722a2; /* Change text color */
+            color: #4722a2;
         }
         .message.user {
             justify-content: flex-end;
@@ -162,12 +162,10 @@
             0%, 80%, 100% {
                 opacity: 0;
             }
-                        40% {
+            40% {
                 opacity: 1;
             }
         }
-
-        /* Media queries for mobile optimization */
         @media (max-width: 600px) {
             #chatContainer {
                 width: 100%;
@@ -187,9 +185,9 @@
                 height: 30px;
             }
             #sendButton {
-                width: 80px; /* Adjust this value to your desired width */
+                width: 80px;
                 border-radius: 0;
-                font-size: 14px; /* Adjust this value to your desired font size */
+                font-size: 14px;
             }
         }
     </style>
@@ -217,7 +215,7 @@
         const minimizedChat = document.getElementById('minimizedChat');
         let typingIndicator;
 
-        function toggleChat() {
+            function toggleChat() {
             if (chatContainer.style.display === 'none') {
                 chatContainer.style.display = 'block';
                 chatContainer.classList.add('open');
@@ -227,6 +225,30 @@
                 chatContainer.classList.remove('open');
                 minimizedChat.style.display = 'flex';
             }
+        }
+
+        async function loadDocumentText() {
+            const response = await fetch('https://raw.githubusercontent.com/AugmentedRealityweb/EvoDent/main/Steli.txt');
+            const text = await response.text();
+            return text;
+        }
+
+        async function fetchCurrentDateTime() {
+            try {
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Bucharest');
+                const data = await response.json();
+                console.log("Current DateTime from API:", data.datetime);
+                return data.datetime; 
+            } catch (error) {
+                console.error("Error fetching current date and time:", error);
+                return null;
+            }
+        }
+
+        function getNextDayDate(currentDate) {
+            const date = new Date(currentDate);
+            date.setDate(date.getDate() + 1);
+            return date.toLocaleDateString('ro-RO');
         }
 
         function formatResponse(response) {
@@ -251,51 +273,64 @@
         let conversationHistory = [];
 
         async function sendMessage() {
-  const message = inputBox.value;
-  if (!message.trim()) return;
-  inputBox.value = '';
-  chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
+            const message = inputBox.value;
+            if (!message.trim()) return;
+            inputBox.value = '';
+            chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
 
-  conversationHistory.push({ role: "user", content: message });
+            conversationHistory.push({ role: "user", content: message });
 
-  showTypingIndicator();
+            showTypingIndicator();
 
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ messages: conversationHistory })
-    });
+            try {
+                const documentText = await loadDocumentText();
+                const currentDateTime = await fetchCurrentDateTime();
+                const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
+                const nextDayDate = currentDateTime ? getNextDayDate(currentDateTime) : 'unavailable';
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+                const systemMessage = `
+                    You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
+                    Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
+                    Predictions for tomorrow (${nextDayDate}): [Your predictions here based on the astrology knowledge base]
+                `;
 
-    const data = await response.json();
-    console.log("Response from API:", data);
+                conversationHistory.unshift({ role: "system", content: systemMessage });
 
-    if (data.choices && data.choices.length > 0) {
-      let assistantMessage = data.choices[0].message.content;
-      assistantMessage = formatResponse(assistantMessage);
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ messages: conversationHistory })
+                });
 
-      conversationHistory.push({ role: "assistant", content: assistantMessage });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-      removeTypingIndicator();
+                const data = await response.json();
+                console.log("Response from API:", data);
 
-      chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-      chatbox.scrollTop = chatbox.scrollHeight;
-    } else {
-      throw new Error("Invalid response format");
-    }
-  } catch (error) {
-    console.error("Error during API request:", error);
-    removeTypingIndicator();
-    chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
-}
+                if (data.choices && data.choices.length > 0) {
+                    let assistantMessage = data.choices[0].message.content;
+                    assistantMessage = formatResponse(assistantMessage);
+
+                    conversationHistory.push({ role: "assistant", content: assistantMessage });
+
+                    removeTypingIndicator();
+
+                    chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                } else {
+                    throw new Error("Invalid response format");
+                }
+            } catch (error) {
+                console.error("Error during API request:", error);
+                removeTypingIndicator();
+                chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
 
         async function openChatWithInitialMessage() {
             toggleChat();
