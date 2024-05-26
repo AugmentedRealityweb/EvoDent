@@ -198,7 +198,7 @@
     <div id="chatContainer" class="open">
         <div id="chatHeader" onclick="toggleChat()">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
-            <span>EvoDentBot</span>
+            <span>Astrologul</span>
         </div>
         <div id="chatbox"></div>
         <div style="display: flex;">
@@ -241,82 +241,76 @@
             return response.replace(/(?:\.\s*)/g, '.<br><br>');
         }
 
-        async function sendMessage() {
-            const message = inputBox.value;
-            if (!message.trim()) return;
-            inputBox.value = '';
-            chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
+        let conversationHistory = [];
 
-            // Add typing indicator
-            showTypingIndicator();
+async function sendMessage() {
+    const message = inputBox.value;
+    if (!message.trim()) return;
+    inputBox.value = '';
+    chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
 
-            const documentText = await loadDocumentText();
+    // Adaugă mesajul utilizatorului în istoricul conversației
+    conversationHistory.push({ role: "user", content: message });
 
-            console.log("Sending message to API:", message);
+    // Adaugă indicatorul de tastare
+    showTypingIndicator();
 
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+    const documentText = await loadDocumentText();
+
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: `You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology. When you provide information, it should be structured, clear, and comprehensive. You provide insights and help customers as if you are an experienced astrologer. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}`
                 },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: `You are EvoDentBot, a friendly and helpful AI assistant for our company. When you provide longer information, it should be structured, aligned, and arranged in the chat page. You provide information and help customers as if you are an experienced employee of the company. The following is the knowledge base of the company: ${documentText}`
-                        },
-                        { role: "user", content: message }
-                    ]
-                })
-            });
+                ...conversationHistory
+            ]
+        })
+    });
 
-            const data = await response.json();
-            console.log("Response from API:", data);
+    const data = await response.json();
+    if (data.choices && data.choices.length > 0) {
+        let assistantMessage = data.choices[0].message.content;
+        assistantMessage = formatResponse(assistantMessage);
 
-            if (data.choices && data.choices.length > 0) {
-                let assistantMessage = data.choices[0].message.content;
-                assistantMessage = formatResponse(assistantMessage);
+        // Adaugă răspunsul asistentului în istoricul conversației
+        conversationHistory.push({ role: "assistant", content: assistantMessage });
 
-                // Remove typing indicator
-                removeTypingIndicator();
+        // Scoate indicatorul de tastare
+        removeTypingIndicator();
 
-                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } else {
-                removeTypingIndicator();
-                chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            }
-        }
+        chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    } else {
+        removeTypingIndicator();
+        chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+}
 
-        function showTypingIndicator() {
-            typingIndicator = document.createElement('div');
-            typingIndicator.className = 'typing-indicator';
-            typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-            chatbox.appendChild(typingIndicator);
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            if (typingIndicator) {
-                typingIndicator.remove();
-                typingIndicator = null;
-            }
-        }
 
         // Function to open chat automatically with an initial message
-        async function openChatWithInitialMessage() {
-            toggleChat();
-            chatbox.innerHTML += `<div class="message assistant"><p>Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim.</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>1.Harta natală</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>2.Tranzite și Predicții</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>3.Compatibilitate</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>4.Aspecte personale</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>5.Astrologie zilnică și săptămânală</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><p>6.Întrebări generale despre astrologi</p></div>`;
-        }
-
+       async function openChatWithInitialMessage() {
+    toggleChat();
+    chatbox.innerHTML += `
+        <div class="message assistant">
+            <p>
+                Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
+                1. Harta natală<br>
+                2. Tranzite și Predicții<br>
+                3. Compatibilitate<br>
+                4. Aspecte personale<br>
+                5. Astrologie zilnică și săptămânală<br>
+                6. Întrebări generale despre astrologie
+            </p>
+        </div>`;
+}
         // Automatically open chat after 2 seconds
         window.onload = function() {
             chatContainer.style.display = 'none';
