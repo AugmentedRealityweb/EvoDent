@@ -71,21 +71,20 @@
             font-size: 16px; /* Adjust this value to your desired font size */
         }
         #minimizedChat {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: transparent;
-    position: fixed;
-    bottom: 50%;
-    right: 50%;
-    transform: translate(50%, 50%);
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-}
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: transparent;
+            position: fixed;
+            bottom: 50%;
+            right: 50%;
+            transform: translate(50%, 50%);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
         }
         #minimizedChat::before {
             content: '';
@@ -241,84 +240,112 @@
             return response.replace(/(?:\.\s*)/g, '.<br><br>');
         }
 
-        let conversationHistory = [];
+        function showTypingIndicator() {
+            typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            chatbox.appendChild(typingIndicator);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
 
-async function sendMessage() {
-    const message = inputBox.value;
-    if (!message.trim()) return;
-    inputBox.value = '';
-    chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
-
-    // Adaugă mesajul utilizatorului în istoricul conversației
-    conversationHistory.push({ role: "user", content: message });
-
-    // Adaugă indicatorul de tastare
-    showTypingIndicator();
-
-    const documentText = await loadDocumentText();
-
-    const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology. When you provide information, it should be structured, clear, and comprehensive. You provide insights and help customers as if you are an experienced astrologer. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}`
-                },
-                ...conversationHistory
-            ]
-        })
-    });
-
-    const data = await response.json();
-    if (data.choices && data.choices.length > 0) {
-        let assistantMessage = data.choices[0].message.content;
-        assistantMessage = formatResponse(assistantMessage);
-
-        // Adaugă răspunsul asistentului în istoricul conversației
-        conversationHistory.push({ role: "assistant", content: assistantMessage });
-
-        // Scoate indicatorul de tastare
-        removeTypingIndicator();
-
-        chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-        chatbox.scrollTop = chatbox.scrollHeight;
-    } else {
-        removeTypingIndicator();
-        chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
-        chatbox.scrollTop = chatbox.scrollHeight;
+        function removeTypingIndicator() {
+            if (typingIndicator) {
+                typingIndicator.remove();
+                            typingIndicator = null;
+        }
     }
-}
 
+    let conversationHistory = [];
 
-        // Function to open chat automatically with an initial message
-       async function openChatWithInitialMessage() {
-    toggleChat();
-    chatbox.innerHTML += `
-        <div class="message assistant">
-            <p>
-                Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
-                1. Harta natală<br>
-                2. Tranzite și Predicții<br>
-                3. Compatibilitate<br>
-                4. Aspecte personale<br>
-                5. Astrologie zilnică și săptămânală<br>
-                6. Întrebări generale despre astrologie
-            </p>
-        </div>`;
-}
-        // Automatically open chat after 2 seconds
-        window.onload = function() {
-            chatContainer.style.display = 'none';
-            minimizedChat.style.display = 'flex';
-            setTimeout(() => {
-                openChatWithInitialMessage();
-            }, 2200);
-        };
+    async function sendMessage() {
+        const message = inputBox.value;
+        if (!message.trim()) return;
+        inputBox.value = '';
+        chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
+
+        // Adaugă mesajul utilizatorului în istoricul conversației
+        conversationHistory.push({ role: "user", content: message });
+
+        // Adaugă indicatorul de tastare
+        showTypingIndicator();
+
+        try {
+            const documentText = await loadDocumentText();
+            console.log("Document text loaded:", documentText);
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        {
+                            role: "system",
+                            content: `You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology. When you provide information, it should be structured, clear, and comprehensive. You provide insights and help customers as if you are an experienced astrologer. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}`
+                        },
+                        ...conversationHistory
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Response from API:", data);
+
+            if (data.choices && data.choices.length > 0) {
+                let assistantMessage = data.choices[0].message.content;
+                assistantMessage = formatResponse(assistantMessage);
+
+                // Adaugă răspunsul asistentului în istoricul conversației
+                conversationHistory.push({ role: "assistant", content: assistantMessage });
+
+                // Scoate indicatorul de tastare
+                removeTypingIndicator();
+
+                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } else {
+                throw new Error("Invalid response format");
+            }
+        } catch (error) {
+            console.error("Error during API request:", error);
+            removeTypingIndicator();
+            chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    }
+
+    // Function to open chat automatically with an initial message
+    async function openChatWithInitialMessage() {
+        toggleChat();
+        chatbox.innerHTML += `
+            <div class="message assistant">
+                <p>
+                    Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
+                    1. Harta natală<br>
+                    2. Tranzite și Predicții<br>
+                    3. Compatibilitate<br>
+                    4. Aspecte personale<br>
+                    5. Astrologie zilnică și săptămânală<br>
+                    6. Întrebări generale despre astrologie
+                </p>
+            </div>`;
+    }
+
+    // Automatically open chat after 2 seconds
+    window.onload = function() {
+        chatContainer.style.display = 'none';
+        minimizedChat.style.display = 'flex';
+        setTimeout(() => {
+            openChatWithInitialMessage();
+        }, 2200);
+    };
     </script>
 </body>
 </html>
+
