@@ -161,8 +161,8 @@
         @keyframes blink {
             0%, 80%, 100% {
                 opacity: 0;
-            }
-            40% {
+                }
+                        40% {
                 opacity: 1;
             }
         }
@@ -248,119 +248,129 @@
             }
         }
 
+        // Function to get the next day's date
+        function getNextDayDate(currentDate) {
+            const date = new Date(currentDate);
+            date.setDate(date.getDate() + 1);
+            return date.toLocaleDateString('ro-RO');
+        }
+
         function formatResponse(response) {
             return response.replace(/(?:\.\s*)/g, '.<br><br>');
         }
 
         function showTypingIndicator() {
             typingIndicator = document.createElement('div');
-                    typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        chatbox.appendChild(typingIndicator);
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function removeTypingIndicator() {
-        if (typingIndicator) {
-            typingIndicator.remove();
-            typingIndicator = null;
-        }
-    }
-
-    let conversationHistory = [];
-
-    async function sendMessage() {
-        const message = inputBox.value;
-        if (!message.trim()) return;
-        inputBox.value = '';
-        chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
-
-        // Adaugă mesajul utilizatorului în istoricul conversației
-        conversationHistory.push({ role: "user", content: message });
-
-        // Adaugă indicatorul de tastare
-        showTypingIndicator();
-
-        try {
-            const documentText = await loadDocumentText();
-            const currentDateTime = await fetchCurrentDateTime();
-            const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
-            const systemMessage = `
-                You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
-                Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
-            `;
-
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: systemMessage
-                        },
-                        ...conversationHistory
-                    ]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log("Response from API:", data);
-
-            if (data.choices && data.choices.length > 0) {
-                let assistantMessage = data.choices[0].message.content;
-                assistantMessage = formatResponse(assistantMessage);
-
-                // Adaugă răspunsul asistentului în istoricul conversației
-                conversationHistory.push({ role: "assistant", content: assistantMessage });
-
-                // Scoate indicatorul de tastare
-                removeTypingIndicator();
-
-                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } else {
-                throw new Error("Invalid response format");
-            }
-        } catch (error) {
-            console.error("Error during API request:", error);
-            removeTypingIndicator();
-            chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            chatbox.appendChild(typingIndicator);
             chatbox.scrollTop = chatbox.scrollHeight;
         }
-    }
 
-    async function openChatWithInitialMessage() {
-        toggleChat();
-        chatbox.innerHTML += `
-            <div class="message assistant">
-                <p>
-                    Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
-                    1. Harta natală<br>
-                    2. Tranzite și Predicții<br>
-                    3. Compatibilitate<br>
-                    4. Aspecte personale<br>
-                    5. Astrologie zilnică și săptămânală<br>
-                    6. Întrebări generale despre astrologie
-                </p>
-            </div>`;
-    }
+        function removeTypingIndicator() {
+            if (typingIndicator) {
+                typingIndicator.remove();
+                typingIndicator = null;
+            }
+        }
 
-    // Automatically open chat after 2 seconds
-    window.onload = function() {
-        chatContainer.style.display = 'none';
-        minimizedChat.style.display = 'flex';
-        setTimeout(() => {
-            openChatWithInitialMessage();
-        }, 2200);
-    };
+        let conversationHistory = [];
+
+        async function sendMessage() {
+            const message = inputBox.value;
+            if (!message.trim()) return;
+            inputBox.value = '';
+            chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
+
+            // Adaugă mesajul utilizatorului în istoricul conversației
+            conversationHistory.push({ role: "user", content: message });
+
+            // Adaugă indicatorul de tastare
+            showTypingIndicator();
+
+            try {
+                const documentText = await loadDocumentText();
+                const currentDateTime = await fetchCurrentDateTime();
+                const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
+                const nextDayDate = currentDateTime ? getNextDayDate(currentDateTime) : 'unavailable';
+
+                const systemMessage = `
+                    You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
+                    Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
+                    Predictions for tomorrow (${nextDayDate}): [Your predictions here based on the astrology knowledge base]
+                `;
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            {
+                                role: "system",
+                                content: systemMessage
+                            },
+                            ...conversationHistory
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Response from API:", data);
+
+                if (data.choices && data.choices.length > 0) {
+                    let assistantMessage = data.choices[0].message.content;
+                    assistantMessage = formatResponse(assistantMessage);
+
+                    // Adaugă răspunsul asistentului în istoricul conversației
+                    conversationHistory.push({ role: "assistant", content: assistantMessage });
+
+                    // Scoate indicatorul de tastare
+                    removeTypingIndicator();
+
+                    chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                } else {
+                    throw new Error("Invalid response format");
+                }
+            } catch (error) {
+                console.error("Error during API request:", error);
+                removeTypingIndicator();
+                chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
+
+        async function openChatWithInitialMessage() {
+            toggleChat();
+            chatbox.innerHTML += `
+                <div class="message assistant">
+                    <p>
+                        Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
+                        1. Harta natală<br>
+                        2. Tranzite și Predicții<br>
+                        3. Compatibilitate<br>
+                        4. Aspecte personale<br>
+                        5. Astrologie zilnică și săptămânală<br>
+                        6. Întrebări generale despre astrologie
+                    </p>
+                </div>`;
+        }
+
+        // Automatically open chat after 2 seconds
+        window.onload = function() {
+            chatContainer.style.display = 'none';
+            minimizedChat.style.display = 'flex';
+            setTimeout(() => {
+                openChatWithInitialMessage();
+            }, 2200);
+        };
     </script>
 </body>
 </html>
