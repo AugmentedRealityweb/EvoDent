@@ -201,8 +201,8 @@
         </div>
         <div id="chatbox"></div>
         <div style="display: flex;">
-            <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()">
-            <button id="sendButton" onclick="sendMessage()">Send</button>
+            <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()" disabled>
+            <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
         </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
@@ -213,8 +213,12 @@
         const chatContainer = document.getElementById('chatContainer');
         const chatbox = document.getElementById('chatbox');
         const inputBox = document.getElementById('inputBox');
+        const sendButton = document.getElementById('sendButton');
         const minimizedChat = document.getElementById('minimizedChat');
         let typingIndicator;
+        let paywallTimer;
+        let conversationHistory = [];
+        let isPaywallActive = false;
 
         // Define the toggleChat function
         function toggleChat() {
@@ -222,14 +226,9 @@
                 chatContainer.style.display = 'block';
                 chatContainer.classList.add('open');
                 minimizedChat.style.display = 'none';
-            } else {
-                chatContainer.style.display = 'none';
-                chatContainer.classList.remove('open');
-                minimizedChat.style.display = 'flex';
+                startPaywallTimer();
             }
-        }
-
-        // Function to load document text
+// Function to load document text
         async function loadDocumentText() {
             const response = await fetch('https://raw.githubusercontent.com/AugmentedRealityweb/EvoDent/main/Steli.txt');
             const text = await response.text();
@@ -255,112 +254,139 @@
         function showTypingIndicator() {
             typingIndicator = document.createElement('div');
             typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        chatbox.appendChild(typingIndicator);
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function removeTypingIndicator() {
-        if (typingIndicator) {
-            typingIndicator.remove();
-            typingIndicator = null;
-        }
-    }
-
-    let conversationHistory = [];
-
-    async function sendMessage() {
-        const message = inputBox.value;
-        if (!message.trim()) return;
-        inputBox.value = '';
-        chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
-
-        // Adaugă mesajul utilizatorului în istoricul conversației
-        conversationHistory.push({ role: "user", content: message });
-
-        // Adaugă indicatorul de tastare
-        showTypingIndicator();
-
-        try {
-            const documentText = await loadDocumentText();
-            const currentDateTime = await fetchCurrentDateTime();
-            const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
-            const systemMessage = `
-                You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
-                Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
-            `;
-
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: systemMessage
-                        },
-                        ...conversationHistory
-                    ]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log("Response from API:", data);
-
-            if (data.choices && data.choices.length > 0) {
-                let assistantMessage = data.choices[0].message.content;
-                assistantMessage = formatResponse(assistantMessage);
-
-                // Adaugă răspunsul asistentului în istoricul conversației
-                conversationHistory.push({ role: "assistant", content: assistantMessage });
-
-                // Scoate indicatorul de tastare
-                removeTypingIndicator();
-
-                chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } else {
-                throw new Error("Invalid response format");
-            }
-        } catch (error) {
-            console.error("Error during API request:", error);
-            removeTypingIndicator();
-            chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+            typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            chatbox.appendChild(typingIndicator);
             chatbox.scrollTop = chatbox.scrollHeight;
         }
-    }
 
-    async function openChatWithInitialMessage() {
-        toggleChat();
-        chatbox.innerHTML += `
-            <div class="message assistant">
-                <p>
-                    Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
-                    1. Harta natală<br>
-                    2. Tranzite și Predicții<br>
-                    3. Compatibilitate<br>
-                    4. Aspecte personale<br>
-                    5. Astrologie zilnică și săptămânală<br>
-                    6. Întrebări generale despre astrologie
-                </p>
-            </div>`;
-    }
+        function removeTypingIndicator() {
+            if (typingIndicator) {
+                typingIndicator.remove();
+                typingIndicator = null;
+            }
+        }
 
-    // Automatically open chat after 2 seconds
-    window.onload = function() {
-        chatContainer.style.display = 'none';
-        minimizedChat.style.display = 'flex';
-        setTimeout(() => {
-            openChatWithInitialMessage();
-        }, 2200);
-    };
+        function startPaywallTimer() {
+            // Set a timer for 3 minutes (180,000 milliseconds)
+            paywallTimer = setTimeout(() => {
+                isPaywallActive = true;
+                displayPaywallMessage();
+            }, 18000);
+        }
+
+        function displayPaywallMessage() {
+            chatbox.innerHTML += `<div class="message assistant"><p>Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.</p></div>`;
+            inputBox.disabled = true;
+            sendButton.disabled = true;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function handlePayment() {
+            // This function should integrate with a real payment gateway
+            // For demonstration, we'll assume the payment is successful after clicking a button
+            alert('Plata a fost efectuată cu succes. Puteți continua discuția.');
+            isPaywallActive = false;
+            inputBox.disabled = false;
+            sendButton.disabled = false;
+        }
+
+        async function sendMessage() {
+            if (isPaywallActive) {
+                alert('Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.');
+                return;
+            }
+
+            const message = inputBox.value;
+            if (!message.trim()) return;
+            inputBox.value = '';
+            chatbox.innerHTML += `<div class="message user"><p>${message}</p></div>`;
+
+            // Adaugă mesajul utilizatorului în istoricul conversației
+            conversationHistory.push({ role: "user", content: message });
+
+            // Adaugă indicatorul de tastare
+            showTypingIndicator();
+
+            try {
+                const documentText = await loadDocumentText();
+                const currentDateTime = await fetchCurrentDateTime();
+                const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
+                const systemMessage = `
+                    You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
+                    Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
+                `;
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            {
+                                role: "system",
+                                content: systemMessage
+                            },
+                            ...conversationHistory
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Response from API:", data);
+
+                if (data.choices && data.choices.length > 0) {
+                    let assistantMessage = data.choices[0].message.content;
+                    assistantMessage = formatResponse(assistantMessage);
+
+                    // Adaugă răspunsul asistentului în istoricul conversației
+                    conversationHistory.push({ role: "assistant", content: assistantMessage });
+
+                    // Scoate indicatorul de tastare
+                    removeTypingIndicator();
+
+                    chatbox.innerHTML += `<div class="message assistant"><p>${assistantMessage}</p></div>`;
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                } else {
+                    throw new Error("Invalid response format");
+                }
+            } catch (error) {
+                console.error("Error during API request:", error);
+                removeTypingIndicator();
+                chatbox.innerHTML += `<div class="message assistant"><p>There was an error processing your request. Please try again.</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
+
+        async function openChatWithInitialMessage() {
+            toggleChat();
+            chatbox.innerHTML += `
+                <div class="message assistant">
+                    <p>
+                        Bună, pentru a începe sesiunea, spune-mi despre ce subiect ai vrea să vorbim:<br>
+                        1. Harta natală<br>
+                        2. Tranzite și Predicții<br>
+                        3. Compatibilitate<br>
+                        4. Aspecte personale<br>
+                        5. Astrologie zilnică și săptămânală<br>
+                        6. Întrebări generale despre astrologie
+                    </p>
+                </div>`;
+        }
+
+        // Automatically open chat after 2 seconds
+        window.onload = function() {
+            chatContainer.style.display = 'none';
+            minimizedChat.style.display = 'flex';
+            setTimeout(() => {
+                openChatWithInitialMessage();
+            }, 2200);
+        };
     </script>
 </body>
 </html>
