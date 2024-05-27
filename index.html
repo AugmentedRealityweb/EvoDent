@@ -223,14 +223,6 @@
             <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()">
             <button id="sendButton" onclick="sendMessage()">Send</button>
         </div>
-        <div id="paymentContainer" style="display: none;">
-            <p>Plătește 20 RON pentru a continua conversația:</p>
-            <a href="https://revolut.me/r/4LFLk80RSi" target="_blank" id="payment-link">Plătește aici</a>
-            <div id="codeInputContainer">
-                <input type="text" id="codeInput" placeholder="Introdu codul primit">
-                <button id="confirmCodeButton" onclick="confirmCode()">Confirmă Codul</button>
-            </div>
-        </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
@@ -242,12 +234,11 @@
         const inputBox = document.getElementById('inputBox');
         const sendButton = document.getElementById('sendButton');
         const minimizedChat = document.getElementById('minimizedChat');
-        const codeInputContainer = document.getElementById('codeInputContainer');
-                const paymentContainer = document.getElementById('paymentContainer');
         let typingIndicator;
         let paywallTimer;
         let conversationHistory = [];
         let isPaywallActive = false;
+        let codeVerified = false;
 
         // Define the toggleChat function
         function toggleChat() {
@@ -259,7 +250,7 @@
             } else {
                 chatContainer.style.display = 'none';
                 chatContainer.classList.remove('open');
-                minimizedChat.style.display = 'flex';
+                                minimizedChat.style.display = 'flex';
             }
         }
 
@@ -313,18 +304,14 @@
             chatbox.innerHTML += `<div class="message assistant"><p>Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.</p></div>`;
             chatbox.innerHTML += `<div class="message assistant"><a href="https://revolut.me/r/4LFLk80RSi" target="_blank">Plătește aici</a></div>`;
             chatbox.innerHTML += `<div class="message assistant"><p>După ce efectuezi plata, introdu codul primit pentru a continua conversația.</p></div>`;
-            codeInputContainer.style.display = 'flex';
-            paymentContainer.style.display = 'block';
             chatbox.scrollTop = chatbox.scrollHeight;
         }
 
-        function confirmCode() {
-            const codeInput = document.getElementById('codeInput').value;
-            if (codeInput === '1234') {
+        function confirmCode(code) {
+            if (code === '1234') {
                 chatbox.innerHTML += `<div class="message assistant"><p>Codul este corect. Puteți continua discuția.</p></div>`;
                 isPaywallActive = false;
-                codeInputContainer.style.display = 'none';
-                paymentContainer.style.display = 'none';
+                codeVerified = true;
             } else {
                 chatbox.innerHTML += `<div class="message assistant"><p>Codul este greșit. Te rog verifică codul și încearcă din nou.</p></div>`;
             }
@@ -340,10 +327,9 @@
             // Adaugă mesajul utilizatorului în istoricul conversației
             conversationHistory.push({ role: "user", content: message });
 
-            // Dacă paywall-ul este activat, cere codul de confirmare
-            if (isPaywallActive) {
-                chatbox.innerHTML += `<div class="message assistant"><p>Te rog introdu codul primit după efectuarea plății.</p></div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
+            // Dacă paywall-ul este activat și codul nu a fost verificat, verifică codul
+            if (isPaywallActive && !codeVerified) {
+                confirmCode(message.trim());
                 return;
             }
 
