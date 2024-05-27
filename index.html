@@ -220,8 +220,8 @@
         </div>
         <div id="chatbox"></div>
         <div style="display: flex;">
-            <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()" disabled>
-            <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
+            <input type="text" id="inputBox" placeholder="Scrie mesajul tau aici..." onkeydown="if(event.key === 'Enter') sendMessage()">
+            <button id="sendButton" onclick="sendMessage()">Send</button>
         </div>
         <div id="paymentContainer" style="display: none;">
             <p>Plătește 20 RON pentru a continua conversația:</p>
@@ -241,12 +241,11 @@
         const chatbox = document.getElementById('chatbox');
         const inputBox = document.getElementById('inputBox');
         const sendButton = document.getElementById('sendButton');
-        const minimizedChat = document.getElementById('minimizedChat');
-        const codeInputContainer = document.getElementById('codeInputContainer');
+                const minimizedChat = document.getElementById('minimizedChat');
         let typingIndicator;
         let paywallTimer;
         let conversationHistory = [];
-        let isPaywallActive = false;
+        let isPaywallActive = true;
 
         // Define the toggleChat function
         function toggleChat() {
@@ -312,9 +311,6 @@
             chatbox.innerHTML += `<div class="message assistant"><p>Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.</p></div>`;
             chatbox.innerHTML += `<div class="message assistant"><a href="https://revolut.me/r/4LFLk80RSi" target="_blank">Plătește aici</a></div>`;
             chatbox.innerHTML += `<div class="message assistant"><p>După ce efectuezi plata, introdu codul primit pentru a continua conversația.</p></div>`;
-            inputBox.disabled = true;
-            sendButton.disabled = true;
-            document.getElementById('paymentContainer').style.display = 'block';
             codeInputContainer.style.display = 'flex';
             chatbox.scrollTop = chatbox.scrollHeight;
         }
@@ -324,20 +320,13 @@
             if (codeInput === '1234') {
                 alert('Codul este corect. Puteți continua discuția.');
                 isPaywallActive = false;
-                inputBox.disabled = false;
-                sendButton.disabled = false;
-                document.getElementById('paymentContainer').style.display = 'none';
+                codeInputContainer.style.display = 'none';
             } else {
-                alert('Codul este incorect. Vă rugăm să verificați și să încercați din nou.');
+                alert('Codul este greșit. Te rog verifică codul și încearcă din nou.');
             }
         }
 
         async function sendMessage() {
-            if (isPaywallActive) {
-                alert('Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.');
-                return;
-            }
-
             const message = inputBox.value;
             if (!message.trim()) return;
             inputBox.value = '';
@@ -345,6 +334,13 @@
 
             // Adaugă mesajul utilizatorului în istoricul conversației
             conversationHistory.push({ role: "user", content: message });
+
+            // Dacă paywall-ul este activat, cere codul de confirmare
+            if (isPaywallActive) {
+                chatbox.innerHTML += `<div class="message assistant"><p>Te rog introdu codul primit după efectuarea plății.</p></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+                return;
+            }
 
             // Adaugă indicatorul de tastare
             showTypingIndicator();
@@ -419,9 +415,6 @@
                         6. Întrebări generale despre astrologie
                     </p>
                 </div>`;
-            // Enable input box and send button
-            inputBox.disabled = false;
-            sendButton.disabled = false;
         }
 
         // Automatically open chat after 2 seconds
@@ -435,3 +428,4 @@
     </script>
 </body>
 </html>
+
