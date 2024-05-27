@@ -241,11 +241,13 @@
         const chatbox = document.getElementById('chatbox');
         const inputBox = document.getElementById('inputBox');
         const sendButton = document.getElementById('sendButton');
-                const minimizedChat = document.getElementById('minimizedChat');
+        const minimizedChat = document.getElementById('minimizedChat');
+        const codeInputContainer = document.getElementById('codeInputContainer');
+                const paymentContainer = document.getElementById('paymentContainer');
         let typingIndicator;
         let paywallTimer;
         let conversationHistory = [];
-        let isPaywallActive = true;
+        let isPaywallActive = false;
 
         // Define the toggleChat function
         function toggleChat() {
@@ -312,18 +314,21 @@
             chatbox.innerHTML += `<div class="message assistant"><a href="https://revolut.me/r/4LFLk80RSi" target="_blank">Plătește aici</a></div>`;
             chatbox.innerHTML += `<div class="message assistant"><p>După ce efectuezi plata, introdu codul primit pentru a continua conversația.</p></div>`;
             codeInputContainer.style.display = 'flex';
+            paymentContainer.style.display = 'block';
             chatbox.scrollTop = chatbox.scrollHeight;
         }
 
         function confirmCode() {
             const codeInput = document.getElementById('codeInput').value;
             if (codeInput === '1234') {
-                alert('Codul este corect. Puteți continua discuția.');
+                chatbox.innerHTML += `<div class="message assistant"><p>Codul este corect. Puteți continua discuția.</p></div>`;
                 isPaywallActive = false;
                 codeInputContainer.style.display = 'none';
+                paymentContainer.style.display = 'none';
             } else {
-                alert('Codul este greșit. Te rog verifică codul și încearcă din nou.');
+                chatbox.innerHTML += `<div class="message assistant"><p>Codul este greșit. Te rog verifică codul și încearcă din nou.</p></div>`;
             }
+            chatbox.scrollTop = chatbox.scrollHeight;
         }
 
         async function sendMessage() {
