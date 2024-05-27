@@ -227,8 +227,14 @@
                 chatContainer.classList.add('open');
                 minimizedChat.style.display = 'none';
                 startPaywallTimer();
+            } else {
+                chatContainer.style.display = 'none';
+                chatContainer.classList.remove('open');
+                minimizedChat.style.display = 'flex';
             }
-// Function to load document text
+        }
+
+        // Function to load document text
         async function loadDocumentText() {
             const response = await fetch('https://raw.githubusercontent.com/AugmentedRealityweb/EvoDent/main/Steli.txt');
             const text = await response.text();
@@ -271,7 +277,7 @@
             paywallTimer = setTimeout(() => {
                 isPaywallActive = true;
                 displayPaywallMessage();
-            }, 18000);
+            }, 180000);
         }
 
         function displayPaywallMessage() {
@@ -377,6 +383,9 @@
                         6. Întrebări generale despre astrologie
                     </p>
                 </div>`;
+            // Enable input box and send button
+            inputBox.disabled = false;
+            sendButton.disabled = false;
         }
 
         // Automatically open chat after 2 seconds
