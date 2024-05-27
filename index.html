@@ -233,8 +233,9 @@
         </div>
     </div>
     <div id="minimizedChat" onclick="toggleChat()">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
-       </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbrNcJwOokdo1BuFs9
+YhvAHTcm3u7d-h5MQ&s.jpg" alt="Astrologul">
+    </div>
 
     <script>
         const chatContainer = document.getElementById('chatContainer');
@@ -310,6 +311,8 @@
 
         function displayPaywallMessage() {
             chatbox.innerHTML += `<div class="message assistant"><p>Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.</p></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><a href="https://revolut.me/r/4LFLk80RSi" target="_blank">Plătește aici</a></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><p>După ce efectuezi plata, introdu codul primit pentru a continua conversația.</p></div>`;
             inputBox.disabled = true;
             sendButton.disabled = true;
             document.getElementById('paymentContainer').style.display = 'block';
