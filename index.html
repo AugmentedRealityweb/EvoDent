@@ -297,12 +297,12 @@
             paywallTimer = setTimeout(() => {
                 isPaywallActive = true;
                 displayPaywallMessage();
-            }, 120000);
+            }, 340000);
         }
 
         function displayPaywallMessage() {
             chatbox.innerHTML += `<div class="message assistant"><p>Dacă dorești continuarea discuției, te rog să efectuezi plata de 20 RON.</p></div>`;
-            chatbox.innerHTML += `<div class="message assistant"><a href="https://revolut.me/r/4LFLk80RSi" target="_blank">Plătește aici</a></div>`;
+            chatbox.innerHTML += `<div class="message assistant"><a href="https://ramonachat.gumroad.com/l/astrologul" target="_blank">Plătește aici</a></div>`;
             chatbox.innerHTML += `<div class="message assistant"><p>După ce efectuezi plata, introdu codul primit pentru a continua conversația.</p></div>`;
             chatbox.scrollTop = chatbox.scrollHeight;
         }
@@ -341,7 +341,7 @@
                 const currentDateTime = await fetchCurrentDateTime();
                 const formattedDate = currentDateTime ? new Date(currentDateTime).toLocaleDateString('ro-RO') : 'unavailable';
                 const systemMessage = `
-                    You are AstroBot, a friendly and knowledgeable AI assistant specialized in astrology.
+                    You are Astrologul, a friendly and knowledgeable AI assistant specialized in astrology. Daca utilizatorul cere servicii personalizate, spune-i sa te contacteze pe Instagram la AstroAstrologul si va primi mai multe servicii personalizate.
                     Today is ${formattedDate}. The following is the detailed knowledge base you will use to answer questions and provide insights: ${documentText}
                 `;
 
@@ -404,6 +404,7 @@
                         4. Aspecte personale<br>
                         5. Astrologie zilnică și săptămânală<br>
                         6. Întrebări generale despre astrologie
+                        7. Dacă dorești astrograma ta personalizată, scrie-mi pe Insta la AstroAstrologul
                     </p>
                 </div>`;
         }
