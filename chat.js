@@ -5,12 +5,9 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Authorization': Bearer ${apiKey}
         },
-        body: JSON.stringify({
-            ...req.body,
-            model: 'gpt-4mini'
-        })
+        body: JSON.stringify(req.body)
     });
 
     const data = await response.json();
